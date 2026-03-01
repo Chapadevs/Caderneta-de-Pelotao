@@ -125,18 +125,21 @@ export default function MilitaresPage() {
           onChange={(e) => setSearch(e.target.value)}
           className="px-4 py-2 bg-brown-dark border border-brown-light rounded text-gray-100 focus:outline-none focus:border-army-accent font-body w-64"
         />
-        <div className="flex gap-2">
-          {['todos', 'hoje', 'semana', 'mes'].map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`px-4 py-2 rounded font-body text-sm ${
-                tab === t ? 'bg-army-accent text-white' : 'bg-brown-dark text-brown-light hover:bg-army'
-              }`}
-            >
-              {t === 'todos' ? 'Todos' : t === 'hoje' ? 'Hoje' : t === 'semana' ? 'Esta semana' : 'Este mês'}
-            </button>
-          ))}
+        <div className="flex flex-col gap-2">
+          <span className="text-brown-light text-sm font-body font-bold">Aniversário:</span>
+          <div className="flex gap-2">
+            {['todos', 'hoje', 'semana', 'mes'].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`px-4 py-2 rounded font-body text-sm ${
+                  tab === t ? 'bg-army-accent text-white' : 'bg-brown-dark text-brown-light hover:bg-army'
+                }`}
+              >
+                {t === 'todos' ? 'Todos' : t === 'hoje' ? 'Hoje' : t === 'semana' ? 'Esta semana' : 'Este mês'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -149,7 +152,7 @@ export default function MilitaresPage() {
               <thead className="bg-army text-white">
                 <tr>
                   <th className="text-left py-3 px-4 font-body">Nome</th>
-                  <th className="text-left py-3 px-4 font-body">Unidade</th>
+                  <th className="text-left py-3 px-4 font-body">Pelotão</th>
                   <th className="text-left py-3 px-4 font-body">Tipo Sanguíneo</th>
                   <th className="text-left py-3 px-4 font-body">Aniversário</th>
                   <th className="text-left py-3 px-4 font-body">Status Aniv.</th>
