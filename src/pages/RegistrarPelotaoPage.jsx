@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { validatePelotao } from '../lib/formValidation'
 
 export default function RegistrarPelotaoPage() {
   const { role } = useAuth()
@@ -9,13 +10,21 @@ export default function RegistrarPelotaoPage() {
   const [nome, setNome] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
+    const validation = validatePelotao({ nome })
+    if (validation) {
+      setFieldErrors(validation)
+      setError(Object.values(validation).join(' '))
+      return
+    }
     setLoading(true)
     try {
-      await supabase.from('pelotao').insert({ nome_pelotao: nome })
+      await supabase.from('pelotao').insert({ nome_pelotao: nome.trim() })
       navigate('/pelotoes')
     } catch (err) {
       setError(err.message || 'Erro ao registrar.')
