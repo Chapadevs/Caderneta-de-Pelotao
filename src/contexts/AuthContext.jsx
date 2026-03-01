@@ -10,48 +10,74 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let cancelled = false
+    const TIMEOUT_MS = 8000
+
+    const finish = () => {
+      if (!cancelled) setLoading(false)
+    }
+
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), TIMEOUT_MS)
+        )
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise])
+
+        if (cancelled) return
         if (session?.user) {
           setUser(session.user)
-          await resolveRoleAndProfile(session.user.id)
+          try {
+            const rolePromise = resolveRoleAndProfile(session.user.id)
+            const roleTimeout = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('timeout')), TIMEOUT_MS)
+            )
+            await Promise.race([rolePromise, roleTimeout])
+          } catch {
+            setUser(null)
+            setRole(null)
+            setProfile(null)
+          }
         } else {
           setUser(null)
           setRole(null)
           setProfile(null)
         }
       } catch (err) {
-        console.error('Erro ao inicializar autenticação:', err)
-        setUser(null)
-        setRole(null)
-        setProfile(null)
+        if (!cancelled) {
+          if (err?.message !== 'timeout') {
+            console.error('Erro ao inicializar autenticação:', err)
+          }
+          setUser(null)
+          setRole(null)
+          setProfile(null)
+        }
       } finally {
-        setLoading(false)
+        finish()
       }
     }
 
     initAuth()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      try {
-        if (session?.user) {
-          setUser(session.user)
-          await resolveRoleAndProfile(session.user.id)
-        } else {
-          setUser(null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        setUser(session.user)
+        resolveRoleAndProfile(session.user.id).catch(() => {
           setRole(null)
           setProfile(null)
-        }
-      } catch (err) {
-        console.error('Erro ao atualizar autenticação:', err)
+        })
+      } else {
         setUser(null)
         setRole(null)
         setProfile(null)
       }
     })
 
-    return () => subscription?.unsubscribe()
+    return () => {
+      cancelled = true
+      subscription?.unsubscribe()
+    }
   }, [])
 
   async function resolveRoleAndProfile(authUserId) {
