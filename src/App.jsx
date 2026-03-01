@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
@@ -177,11 +177,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <div className="bg-army-dark text-gray-100 min-h-screen" style={{ fontFamily: '"Inter", sans-serif' }}>
-      <BrowserRouter basename="/">
+      <HashRouter>
         <AuthProvider>
           <AppRoutes />
         </AuthProvider>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   )
 }
