@@ -24,7 +24,7 @@ export default function RegistrarComandantePage() {
   }, [])
 
   if (role !== 'administrador') {
-    return <p className="text-brown-light">Acesso negado. Apenas administradores podem registrar comandantes.</p>
+    return <p className="text-brown-light">Acesso negado. Apenas administradores podem registrar Comandantes de Pelotão.</p>
   }
 
   const handleSubmit = async (e) => {
@@ -52,7 +52,7 @@ export default function RegistrarComandantePage() {
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-2xl text-brown-light mb-6 font-display">Registrar Novo Comandante</h2>
+      <h2 className="text-2xl text-brown-light mb-6 font-display">Registrar Novo Comandante de Pelotão</h2>
       <form onSubmit={handleSubmit} className="bg-brown-dark p-6 rounded-xl border border-brown-light space-y-4">
         {error && (
           <div className="p-3 bg-red-900/50 border border-red-600 rounded text-red-200 text-sm">{error}</div>

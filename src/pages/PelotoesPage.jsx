@@ -88,7 +88,7 @@ export default function PelotoesPage() {
               <tr>
                 <th className="text-left py-3 px-4 font-body">ID</th>
                 <th className="text-left py-3 px-4 font-body">Nome</th>
-                <th className="text-left py-3 px-4 font-body">Comandante</th>
+                <th className="text-left py-3 px-4 font-body">Comandante de Pelotão</th>
                 <th className="text-left py-3 px-4 font-body">Ações</th>
               </tr>
             </thead>

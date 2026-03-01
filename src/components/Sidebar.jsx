@@ -28,10 +28,10 @@ export default function Sidebar() {
     { to: '/dashboard', icon: '📊', label: 'Dashboard' },
     { to: '/militares', icon: '👥', label: 'Militares' },
     { to: '/pelotoes', icon: '🏛️', label: 'Pelotões' },
-    { to: '/comandantes', icon: '🎖️', label: 'Comandantes' },
+    { to: '/comandantes', icon: '🎖️', label: 'Comandantes de Pelotão' },
     { to: '/editar-perfil', icon: '👤', label: 'Editar Perfil' },
     { to: '/registrar-pelotao', icon: '➕', label: 'Registrar Pelotão' },
-    { to: '/registrar-comandante', icon: '➕', label: 'Registrar Comandante' },
+    { to: '/registrar-comandante', icon: '➕', label: 'Registrar Comandante de Pelotão' },
   ]
 
   const comandanteItems = [

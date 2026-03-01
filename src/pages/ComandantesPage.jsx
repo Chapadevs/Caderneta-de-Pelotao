@@ -22,7 +22,7 @@ export default function ComandantesPage() {
       if (error) throw error
       setComandantes(data || [])
     } catch (err) {
-      console.error('Erro ao carregar comandantes:', err)
+      console.error('Erro ao carregar Comandantes de Pelotão:', err)
       setComandantes([])
     } finally {
       setLoading(false)
@@ -52,7 +52,7 @@ export default function ComandantesPage() {
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Excluir este comandante?')) return
+    if (!confirm('Excluir este Comandante de Pelotão?')) return
     await supabase.from('comandante').delete().eq('comandante_id', id)
     fetchComandantes()
   }
@@ -64,12 +64,12 @@ export default function ComandantesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl text-brown-light font-display">Comandantes</h2>
+        <h2 className="text-2xl text-brown-light font-display">Comandantes de Pelotão</h2>
         <Link
           to="/registrar-comandante"
           className="px-4 py-2 bg-army-accent text-white rounded font-body hover:bg-army-light"
         >
-          Registrar Comandante
+          Registrar Comandante de Pelotão
         </Link>
       </div>
       {loading ? (

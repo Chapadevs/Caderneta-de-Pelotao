@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 
 export default function DashboardPage() {
-  const { role } = useAuth()
+  const { role, profile } = useAuth()
   const [stats, setStats] = useState({
     totalMilitares: 0,
     totalPelotoes: 0,
@@ -13,7 +13,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const { count: milCount } = await supabase.from('militar').select('*', { count: 'exact', head: true })
+      let milQuery = supabase.from('militar').select('*', { count: 'exact', head: true })
+      if (role === 'comandante' && profile?.id_pelotao) {
+        milQuery = milQuery.eq('id_pelotao', profile.id_pelotao)
+      }
+      const { count: milCount } = await milQuery
+
       const { count: pelCount } = await supabase.from('pelotao').select('*', { count: 'exact', head: true })
       const { count: cmdCount } = await supabase.from('comandante').select('*', { count: 'exact', head: true })
       setStats({
@@ -23,7 +28,7 @@ export default function DashboardPage() {
       })
     }
     fetchStats()
-  }, [])
+  }, [role, profile?.id_pelotao])
 
   const StatCard = ({ icon, label, value, color }) => (
     <div className={`bg-brown-dark p-6 rounded-xl shadow-lg border-l-4 ${color} transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300`}>
@@ -40,7 +45,7 @@ export default function DashboardPage() {
   const statsData = [
     { icon: '👥', label: 'Total de Militares', value: stats.totalMilitares.toLocaleString('pt-BR'), color: 'border-army-accent' },
     { icon: '🎖️', label: 'Pelotões', value: stats.totalPelotoes.toString(), color: 'border-army-accent' },
-    { icon: '🛡️', label: 'Comandantes', value: stats.totalComandantes.toString(), color: 'border-army-accent' },
+    { icon: '🛡️', label: 'Comandantes de Pelotão', value: stats.totalComandantes.toString(), color: 'border-army-accent' },
     { icon: '📋', label: 'Efetivo Ativo', value: stats.totalMilitares.toLocaleString('pt-BR'), color: 'border-army-accent' },
   ]
 
@@ -97,7 +102,7 @@ export default function DashboardPage() {
                     <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                   </svg>
                 }
-                label="Registrar Comandante"
+                label="Registrar Comandante de Pelotão"
               />
             </>
           )}
@@ -122,7 +127,7 @@ export default function DashboardPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-army-dark to-transparent" />
         <div className="absolute bottom-0 left-0 p-8">
-          <h3 className="text-4xl font-bold text-white font-display">Caderneta do comandante de pelotão</h3>
+          <h3 className="text-4xl font-bold text-white font-display">Caderneta do Comandante de Pelotão</h3>
           <p className="text-lg text-army-accent mt-2 font-body">A melhor unidade de guerra do mundo!</p>
         </div>
       </section>

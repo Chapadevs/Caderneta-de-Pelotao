@@ -43,7 +43,7 @@ export default function LoginPage() {
             <img src={`${import.meta.env.BASE_URL}images/EB-logo.png`} alt="Logo EB" className="w-full h-full object-contain" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-center text-white mb-8 font-display">Acessar Painel</h2>
+        <h2 className="text-3xl font-bold text-center text-white mb-8 font-display">Caderneta do Comandante de Pelotão</h2>
         <form onSubmit={handleSubmit}>
           {error && (
             <div className="mb-4 p-3 bg-red-900/50 border border-red-600 rounded text-red-200 text-sm">
@@ -58,7 +58,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => { setEmail(e.target.value); setFieldErrors((p) => ({ ...p, email: null })) }}
               className={`rounded-none appearance-none border-b-2 bg-transparent w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:border-army-accent ${fieldErrors.email ? 'border-red-500' : 'border-brown-light'}`}
-              placeholder="comandante@eb.mil.br"
+              placeholder="exemplo@eb.mail.br"
               required
             />
             {fieldErrors.email && <p className="text-red-400 text-xs mt-1">{fieldErrors.email}</p>}
@@ -70,13 +70,10 @@ export default function LoginPage() {
               id="password"
               value={password}
               onChange={(e) => { setPassword(e.target.value); setFieldErrors((p) => ({ ...p, password: null })) }}
-              className={`rounded-none appearance-none border-b-2 bg-transparent w-full py-2 px-3 text-gray-100 mb-3 leading-tight focus:outline-none focus:border-army-accent ${fieldErrors.password ? 'border-red-500' : 'border-brown-light'}`}
+              className={`rounded-none appearance-none border-b-2 bg-transparent w-full py-2 px-3 text-gray-100 leading-tight focus:outline-none focus:border-army-accent ${fieldErrors.password ? 'border-red-500' : 'border-brown-light'}`}
               required
             />
             {fieldErrors.password && <p className="text-red-400 text-xs mt-1">{fieldErrors.password}</p>}
-            <a href="#" className="text-sm text-army-accent hover:text-army-light" onClick={(e) => e.preventDefault()}>
-              Esqueceu a senha?
-            </a>
           </div>
           <div className="flex items-center justify-between">
             <button
