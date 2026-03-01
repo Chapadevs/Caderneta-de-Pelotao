@@ -116,14 +116,14 @@ export default function DashboardPage() {
 
       <section className="relative bg-black rounded-xl shadow-lg overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&h=400&fit=crop"
-          alt="Exército Brasileiro"
-          className="w-full h-64 object-cover opacity-40"
+          src={`${import.meta.env.BASE_URL}images/logobtl.jpg`}
+          alt="Caderneta do Comandante de Pelotão"
+          className="w-full object-contain max-h-64 md:max-h-72 lg:max-h-80 opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-army-dark to-transparent" />
         <div className="absolute bottom-0 left-0 p-8">
-          <h3 className="text-4xl font-bold text-white font-display">CADERNETA DO COMANDANTE</h3>
-          <p className="text-lg text-army-accent mt-2 font-body">Eficiência e Controle para a Defesa Nacional.</p>
+          <h3 className="text-4xl font-bold text-white font-display">Caderneta do comandante de pelotão</h3>
+          <p className="text-lg text-army-accent mt-2 font-body">A melhor unidade de guerra do mundo!</p>
         </div>
       </section>
     </div>
