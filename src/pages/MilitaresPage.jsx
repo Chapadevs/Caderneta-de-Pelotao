@@ -3,16 +3,24 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { validateMilitar } from '../lib/formValidation'
 
+function parseLocalDate(dateStr) {
+  if (!dateStr) return null
+  const s = String(dateStr).split('T')[0]
+  const parts = s.split('-').map(Number)
+  if (parts.length !== 3 || parts.some(isNaN)) return new Date(dateStr)
+  return new Date(parts[0], parts[1] - 1, parts[2])
+}
+
 function formatDate(d) {
   if (!d) return '-'
-  const date = new Date(d)
+  const date = parseLocalDate(d)
   return date.toLocaleDateString('pt-BR')
 }
 
 function getBirthdayStatus(dataAniversario) {
   if (!dataAniversario) return { label: '-', color: 'bg-gray-600' }
   const today = new Date()
-  const bday = new Date(dataAniversario)
+  const bday = parseLocalDate(dataAniversario)
   bday.setFullYear(today.getFullYear())
   const diff = (bday - today) / (1000 * 60 * 60 * 24)
   if (diff === 0) return { label: 'Hoje', color: 'bg-army-accent' }
@@ -30,6 +38,7 @@ export default function MilitaresPage() {
   const [editing, setEditing] = useState(null)
   const [formData, setFormData] = useState({})
   const [editError, setEditError] = useState('')
+  const [viewingMilitar, setViewingMilitar] = useState(null)
 
   useEffect(() => {
     fetchMilitares()
@@ -57,7 +66,7 @@ export default function MilitaresPage() {
     const matchSearch = !search || m.nome?.toLowerCase().includes(search.toLowerCase())
     if (tab === 'todos') return matchSearch
     const today = new Date()
-    const bday = m.data_aniversario ? new Date(m.data_aniversario) : null
+    const bday = parseLocalDate(m.data_aniversario)
     if (!bday) return false
     bday.setFullYear(today.getFullYear())
     const diff = (bday - today) / (1000 * 60 * 60 * 24)
@@ -67,8 +76,8 @@ export default function MilitaresPage() {
     return matchSearch
   })
 
-  const handleDelete = async (id) => {
-    if (!confirm('Excluir este militar?')) return
+  const handleDelete = async (id, skipConfirm = false) => {
+    if (!skipConfirm && !confirm('Excluir este militar?')) return
     await supabase.from('militar').delete().eq('militar_id', id)
     fetchMilitares()
   }
@@ -154,12 +163,8 @@ export default function MilitaresPage() {
                   <th className="text-left py-3 px-4 font-body">Nome</th>
                   <th className="text-left py-3 px-4 font-body">Pelotão</th>
                   <th className="text-left py-3 px-4 font-body">Tipo Sanguíneo</th>
-                  <th className="text-left py-3 px-4 font-body">Aniversário</th>
-                  <th className="text-left py-3 px-4 font-body">Status Aniv.</th>
-                  <th className="text-left py-3 px-4 font-body">Endereço</th>
-                  <th className="text-left py-3 px-4 font-body">Telefone</th>
-                  <th className="text-left py-3 px-4 font-body">FIIB</th>
-                  <th className="text-left py-3 px-4 font-body">FAAT</th>
+                  <th className="text-left py-3 px-4 font-body">Data de nascimento</th>
+                  <th className="text-left py-3 px-4 font-body">Status</th>
                   <th className="text-left py-3 px-4 font-body">Ações</th>
                 </tr>
               </thead>
@@ -168,7 +173,7 @@ export default function MilitaresPage() {
                   <tr key={m.militar_id} className="border-t border-brown-light hover:bg-army/30">
                     {editing === m.militar_id ? (
                       <>
-                        <td colSpan={10} className="p-4">
+                        <td colSpan={6} className="p-4">
                           {editError && (
                             <div className="mb-3 p-2 bg-red-900/50 border border-red-600 rounded text-red-200 text-sm">{editError}</div>
                           )}
@@ -189,7 +194,7 @@ export default function MilitaresPage() {
                               type="date"
                               value={formData.data_aniversario}
                               onChange={(e) => setFormData({ ...formData, data_aniversario: e.target.value })}
-                              className="px-3 py-2 bg-army-dark border border-brown-light rounded text-gray-100"
+                              className="px-3 py-2 bg-army-dark border border-brown-light rounded text-gray-100 [color-scheme:dark]"
                             />
                             <input
                               placeholder="Endereço"
@@ -237,31 +242,13 @@ export default function MilitaresPage() {
                             {getBirthdayStatus(m.data_aniversario).label}
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-body max-w-xs truncate">{m.endereco || '-'}</td>
-                        <td className="py-3 px-4 font-body">{m.telefone || '-'}</td>
-                        <td className="py-3 px-4 font-body">{m.fiib || '-'}</td>
-                        <td className="py-3 px-4 font-body">{m.faat || '-'}</td>
                         <td className="py-3 px-4">
-                          {role === 'comandante' && (
-                            <>
-                              <button onClick={() => handleEdit(m)} className="text-army-accent hover:underline mr-2 font-body text-sm">
-                                Editar
-                              </button>
-                              <button onClick={() => handleDelete(m.militar_id)} className="text-red-400 hover:underline font-body text-sm">
-                                Excluir
-                              </button>
-                            </>
-                          )}
-                          {role === 'administrador' && (
-                            <>
-                              <button onClick={() => handleEdit(m)} className="text-army-accent hover:underline mr-2 font-body text-sm">
-                                Editar
-                              </button>
-                              <button onClick={() => handleDelete(m.militar_id)} className="text-red-400 hover:underline font-body text-sm">
-                                Excluir
-                              </button>
-                            </>
-                          )}
+                          <button
+                            onClick={() => setViewingMilitar(m)}
+                            className="px-3 py-1 bg-army-accent hover:bg-army-light text-white rounded font-body text-sm"
+                          >
+                            Ver mais
+                          </button>
                         </td>
                       </>
                     )}
@@ -273,6 +260,69 @@ export default function MilitaresPage() {
           {filtered.length === 0 && (
             <p className="text-center text-brown-light py-8">Nenhum militar encontrado.</p>
           )}
+        </div>
+      )}
+
+      {viewingMilitar && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" onClick={() => setViewingMilitar(null)}>
+          <div
+            className="bg-brown-dark border border-brown-light rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="text-xl font-display text-white">Informações do Militar</h3>
+              <button
+                onClick={() => setViewingMilitar(null)}
+                className="text-brown-light hover:text-white text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+            <div className="space-y-4 font-body text-gray-300">
+              <div><span className="text-brown-light font-bold">Nome:</span> {viewingMilitar.nome || '-'}</div>
+              <div><span className="text-brown-light font-bold">Pelotão:</span> {viewingMilitar.pelotao?.nome_pelotao || '-'}</div>
+              <div><span className="text-brown-light font-bold">Tipo Sanguíneo:</span> {viewingMilitar.tipo_sanguineo || '-'}</div>
+              <div><span className="text-brown-light font-bold">Data de nascimento:</span> {formatDate(viewingMilitar.data_aniversario)}</div>
+              <div>
+                <span className="text-brown-light font-bold">Status:</span>{' '}
+                <span className={`px-2 py-1 rounded text-xs ${getBirthdayStatus(viewingMilitar.data_aniversario).color}`}>
+                  {getBirthdayStatus(viewingMilitar.data_aniversario).label}
+                </span>
+              </div>
+              <div><span className="text-brown-light font-bold">Endereço:</span> {viewingMilitar.endereco || '-'}</div>
+              <div><span className="text-brown-light font-bold">Telefone:</span> {viewingMilitar.telefone || '-'}</div>
+              <div><span className="text-brown-light font-bold">FIIB:</span> {viewingMilitar.fiib || '-'}</div>
+              <div><span className="text-brown-light font-bold">FAAT:</span> {viewingMilitar.faat || '-'}</div>
+            </div>
+            <div className="flex gap-3 mt-6 pt-4 border-t border-brown-light">
+              <button
+                onClick={() => {
+                  handleEdit(viewingMilitar)
+                  setViewingMilitar(null)
+                }}
+                className="px-4 py-2 bg-army-accent hover:bg-army-light text-white rounded font-body"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => {
+                  if (confirm('Excluir este militar?')) {
+                    handleDelete(viewingMilitar.militar_id, true)
+                    setViewingMilitar(null)
+                  }
+                }}
+                className="px-4 py-2 bg-red-900/50 hover:bg-red-800 text-red-200 rounded font-body"
+              >
+                Excluir
+              </button>
+              <button
+                onClick={() => setViewingMilitar(null)}
+                className="px-4 py-2 bg-brown-light hover:bg-brown-dark text-white rounded font-body"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

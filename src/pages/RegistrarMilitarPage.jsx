@@ -61,13 +61,12 @@ export default function RegistrarMilitarPage() {
           <div className="p-3 bg-red-900/50 border border-red-600 rounded text-red-200 text-sm">{error}</div>
         )}
         <div>
-          <label className="block text-brown-light text-sm font-bold mb-2 font-body">Nome <span className="text-red-400">*</span></label>
+          <label className="block text-brown-light text-sm font-bold mb-2 font-body">P/G Nome de Guerra <span className="text-red-400">*</span></label>
           <input
             type="text"
             value={form.nome}
             onChange={(e) => { setForm({ ...form, nome: e.target.value }); setFieldErrors((prev) => ({ ...prev, nome: null })) }}
             className={`w-full px-4 py-2 bg-army-dark border rounded text-gray-100 focus:outline-none focus:border-army-accent ${fieldErrors.nome ? 'border-red-500' : 'border-brown-light'}`}
-            placeholder="Nome completo"
             required
           />
           {fieldErrors.nome && <p className="text-red-400 text-xs mt-1">{fieldErrors.nome}</p>}
@@ -84,12 +83,12 @@ export default function RegistrarMilitarPage() {
             />
           </div>
           <div>
-            <label className="block text-brown-light text-sm font-bold mb-2 font-body">Data de Aniversário</label>
+            <label className="block text-brown-light text-sm font-bold mb-2 font-body">Data de nascimento</label>
             <input
               type="date"
               value={form.data_aniversario}
               onChange={(e) => setForm({ ...form, data_aniversario: e.target.value })}
-              className="w-full px-4 py-2 bg-army-dark border border-brown-light rounded text-gray-100 focus:outline-none focus:border-army-accent"
+              className="w-full px-4 py-2 bg-army-dark border border-brown-light rounded text-gray-100 focus:outline-none focus:border-army-accent [color-scheme:dark]"
             />
           </div>
         </div>
