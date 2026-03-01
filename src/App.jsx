@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
@@ -24,6 +25,21 @@ function ProtectedLayout({ children }) {
   if (!user) {
     return <Navigate to="/" replace />
   }
+  return children
+}
+
+function RedirectHandler({ children }) {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  useEffect(() => {
+    const redirect = sessionStorage.getItem('redirect') || new URLSearchParams(location.search).get('redirect')
+    if (redirect && redirect !== '/' && redirect !== location.pathname) {
+      sessionStorage.removeItem('redirect')
+      navigate(redirect, { replace: true })
+    }
+  }, [navigate, location])
+
   return children
 }
 
@@ -179,7 +195,9 @@ export default function App() {
     <div className="bg-army-dark text-gray-100 min-h-screen" style={{ fontFamily: '"Inter", sans-serif' }}>
       <BrowserRouter basename={import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '')}>
         <AuthProvider>
-          <AppRoutes />
+          <RedirectHandler>
+            <AppRoutes />
+          </RedirectHandler>
         </AuthProvider>
       </BrowserRouter>
     </div>

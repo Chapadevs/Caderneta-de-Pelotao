@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Redirecionando...</title>
+  <script>
+    const path = location.pathname + location.search + location.hash;
+    sessionStorage.setItem('redirect', path);
+    location.replace(location.origin + '/?redirect=' + encodeURIComponent(path));
+  </script>
+</head>
+<body>Redirecionando...</body>
+</html>
