@@ -11,9 +11,11 @@ export default function Header() {
           Bem-vindo, {displayName}
           {role === 'administrador' ? ' (Administrador)' : ' (Comandante de Pelotão)'}
         </span>
-        <div className="w-10 h-10 bg-army-accent rounded-full flex items-center justify-center">
-          <span className="text-white font-bold">{displayName.charAt(0)}</span>
-        </div>
+        <img
+          src={`${import.meta.env.BASE_URL}images/logobtl.jpg`}
+          alt="Logo BTL"
+          className="w-10 h-10 rounded-full object-cover"
+        />
       </div>
     </header>
   )

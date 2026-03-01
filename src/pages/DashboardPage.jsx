@@ -128,7 +128,7 @@ export default function DashboardPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-army-dark to-transparent" />
         <div className="absolute bottom-0 left-0 p-8">
           <h3 className="text-4xl font-bold text-white font-display">Caderneta do Comandante de Pelotão</h3>
-          <p className="text-lg text-army-accent mt-2 font-body">A melhor unidade de guerra do mundo!</p>
+          <p className="text-lg text-army-accent mt-2 font-body">A melhor unidade de guerra, do mundo!</p>
         </div>
       </section>
     </div>
