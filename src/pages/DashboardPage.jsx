@@ -1,0 +1,131 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
+
+export default function DashboardPage() {
+  const { role } = useAuth()
+  const [stats, setStats] = useState({
+    totalMilitares: 0,
+    totalPelotoes: 0,
+    totalComandantes: 0,
+  })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { count: milCount } = await supabase.from('militar').select('*', { count: 'exact', head: true })
+      const { count: pelCount } = await supabase.from('pelotao').select('*', { count: 'exact', head: true })
+      const { count: cmdCount } = await supabase.from('comandante').select('*', { count: 'exact', head: true })
+      setStats({
+        totalMilitares: milCount || 0,
+        totalPelotoes: pelCount || 0,
+        totalComandantes: cmdCount || 0,
+      })
+    }
+    fetchStats()
+  }, [])
+
+  const StatCard = ({ icon, label, value, color }) => (
+    <div className={`bg-brown-dark p-6 rounded-xl shadow-lg border-l-4 ${color} transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300`}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-brown-light uppercase font-body">{label}</p>
+          <p className="text-3xl font-bold text-white font-display">{value}</p>
+        </div>
+        <div className="text-4xl opacity-50">{icon}</div>
+      </div>
+    </div>
+  )
+
+  const statsData = [
+    { icon: '👥', label: 'Total de Militares', value: stats.totalMilitares.toLocaleString('pt-BR'), color: 'border-army-accent' },
+    { icon: '🎖️', label: 'Pelotões', value: stats.totalPelotoes.toString(), color: 'border-army-accent' },
+    { icon: '🛡️', label: 'Comandantes', value: stats.totalComandantes.toString(), color: 'border-army-accent' },
+    { icon: '📋', label: 'Efetivo Ativo', value: stats.totalMilitares.toLocaleString('pt-BR'), color: 'border-army-accent' },
+  ]
+
+  const QuickActionButton = ({ to, icon, label }) => (
+    <Link
+      to={to}
+      className="bg-army-accent text-white py-3 px-6 rounded-lg shadow-md hover:bg-army-light hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center font-body"
+    >
+      {icon}
+      <span className="ml-2 font-semibold">{label}</span>
+    </Link>
+  )
+
+  return (
+    <div className="space-y-8">
+      <section>
+        <h2 className="text-2xl text-brown-light mb-4 font-display">Visão Geral</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {statsData.map((stat, i) => (
+            <StatCard key={i} {...stat} />
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-brown-dark p-6 rounded-xl shadow-lg border border-brown-light">
+        <h2 className="text-2xl text-brown-light mb-4 font-display">Ações Rápidas</h2>
+        <div className="flex flex-wrap gap-4">
+          {role === 'comandante' && (
+            <QuickActionButton
+              to="/registrar-militar"
+              icon={
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+              }
+              label="Registrar Novo Militar"
+            />
+          )}
+          {role === 'administrador' && (
+            <>
+              <QuickActionButton
+                to="/registrar-pelotao"
+                icon={
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                }
+                label="Registrar Pelotão"
+              />
+              <QuickActionButton
+                to="/registrar-comandante"
+                icon={
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                  </svg>
+                }
+                label="Registrar Comandante"
+              />
+            </>
+          )}
+          <QuickActionButton
+            to="/militares"
+            icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                <path fillRule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+              </svg>
+            }
+            label="Ver Efetivo"
+          />
+        </div>
+      </section>
+
+      <section className="relative bg-black rounded-xl shadow-lg overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&h=400&fit=crop"
+          alt="Exército Brasileiro"
+          className="w-full h-64 object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-army-dark to-transparent" />
+        <div className="absolute bottom-0 left-0 p-8">
+          <h3 className="text-4xl font-bold text-white font-display">CADERNETA DO COMANDANTE</h3>
+          <p className="text-lg text-army-accent mt-2 font-body">Eficiência e Controle para a Defesa Nacional.</p>
+        </div>
+      </section>
+    </div>
+  )
+}
