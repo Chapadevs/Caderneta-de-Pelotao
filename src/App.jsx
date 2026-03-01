@@ -177,7 +177,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <div className="bg-army-dark text-gray-100 min-h-screen" style={{ fontFamily: '"Inter", sans-serif' }}>
-      <BrowserRouter basename="/Caderneta-de-Pelotao">
+      <BrowserRouter basename="/">
         <AuthProvider>
           <AppRoutes />
         </AuthProvider>
